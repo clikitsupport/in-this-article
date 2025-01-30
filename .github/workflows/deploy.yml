@@ -13,9 +13,10 @@ jobs:
     - name: Checkout code from GitHub repository
       uses: actions/checkout@v3
 
-    - name: Set up SVN
+    - name: Set up SVN (subversion package)
       run: |
-        sudo apt-get install -y svn
+        sudo apt-get update
+        sudo apt-get install -y subversion  # Install subversion instead of svn
 
     - name: Checkout WordPress Plugin SVN
       run: |
