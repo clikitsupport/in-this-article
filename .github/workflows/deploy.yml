@@ -21,11 +21,14 @@ jobs:
         run: |
           # Checkout the SVN trunk directory into the local working directory
           svn co https://plugins.svn.wordpress.org/in-this-article/ trunk --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
-
+      - name: Remove incorrectly copied files from SVN
+        run: |
+          # Delete any files outside the 'trunk' folder (you can specify paths here)
+          svn delete ./in-this-article.php  # Adjust the file paths if needed
       - name: Copy files from GitHub trunk to SVN trunk
         run: |
           # Copy the contents of the GitHub trunk folder into the SVN trunk directory
-          rm in-this-article.php
+          cp -r ./* ./trunk/
 
       - name: Check SVN status (ensure only modified/new files are added)
         run: |
