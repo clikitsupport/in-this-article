@@ -22,13 +22,19 @@ jobs:
           # Checkout the SVN trunk directory into the local working directory
           svn checkout https://plugins.svn.wordpress.org/in-this-article/trunk/ --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
 
-      - name: Copy GitHub files into the SVN trunk
+      - name: Copy files from GitHub trunk to SVN trunk
         run: |
-          # Now we copy the files from the GitHub repository (current directory) into the SVN 'trunk' directory
+          # Copy the contents of the GitHub trunk folder into the SVN trunk directory
           cp -r ./trunk/* ./trunk/
 
-      - name: Commit and Push Changes to SVN
+      - name: Check SVN status (ensure only modified/new files are added)
         run: |
           cd trunk
+          svn status
+
+      - name: Add new/modified files and commit to SVN
+        run: |
+          cd trunk
+          # Add new files to SVN, commit the changes
           svn add --force .
           svn commit -m "Automated commit from GitHub Actions" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
