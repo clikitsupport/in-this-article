@@ -25,7 +25,7 @@ jobs:
       - name: Copy files from GitHub trunk to SVN trunk
         run: |
           # Copy the contents of the GitHub trunk folder into the SVN trunk directory
-          rm in-this-article.php ./trunk/
+          rm in-this-article.php
 
       - name: Check SVN status (ensure only modified/new files are added)
         run: |
