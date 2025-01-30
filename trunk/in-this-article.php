@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: In This Article
- * Version: 1.1
+ * Version: 1.1.0
  * Description: Plugin that fetches all h2 and h3 tags from the post content
  * Author: ClikIT
  * Author URI:https://clikitnow.com/
