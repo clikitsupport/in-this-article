@@ -1,40 +1,33 @@
-name: Deploy to SVN
+name: Deploy All Files from GitHub 'trunk' to WordPress Plugin SVN
 
 on:
   push:
     branches:
-      - sagar  # You can change this to your working branch
+      - main  # Change this to the branch you want to deploy from (e.g., 'main')
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout GitHub repository
-        uses: actions/checkout@v3
+    - name: Checkout code from GitHub repository
+      uses: actions/checkout@v3
 
-      - name: Set up SVN
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y subversion
+    - name: Set up SVN
+      run: |
+        sudo apt-get install -y svn
 
-      - name: Checkout the SVN repository (trunk)
-        run: |
-          # Checkout the SVN trunk directory into the local working directory
-          svn co https://plugins.svn.wordpress.org/in-this-article/ trunk --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
-      
-      - name: Copy files from GitHub trunk to SVN trunk
-        run: |
-          # Copy the contents of the GitHub trunk folder into the SVN trunk directory
-          cp -r ./* ./trunk/
+    - name: Checkout WordPress Plugin SVN
+      run: |
+        svn co https://plugins.svn.wordpress.org/in-this-article/trunk/ trunk
 
-      - name: Check SVN status (ensure only modified/new files are added)
-        run: |
-          cd trunk
-          svn status
+    - name: Copy files from GitHub 'trunk' to SVN 'trunk'
+      run: |
+        # Copy all files from the 'trunk' folder in GitHub to the 'trunk' folder in SVN
+        cp -r ./trunk/* ./trunk/
 
-      - name: Add new/modified files and commit to SVN
-        run: |
-          cd trunk
-          # Add new files to SVN, commit the changes
-          svn add --force .
-          svn commit -m "Automated commit from GitHub Actions" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
+    - name: Commit and push changes to SVN
+      run: |
+        cd trunk
+        svn add * --force  # Add all files (including new files and directories)
+        svn commit -m "Deploying all files from GitHub 'trunk' to WordPress plugin" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
