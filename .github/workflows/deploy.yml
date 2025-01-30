@@ -20,7 +20,7 @@ jobs:
       - name: Checkout the SVN repository (trunk)
         run: |
           # Checkout the SVN trunk directory into the local working directory
-          svn checkout https://plugins.svn.wordpress.org/in-this-article/trunk/ --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
+          svn checkout https://plugins.svn.wordpress.org/in-this-article/ --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
 
       - name: Copy GitHub files into the SVN trunk
         run: |
