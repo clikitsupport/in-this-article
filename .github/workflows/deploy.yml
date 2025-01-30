@@ -25,7 +25,7 @@ jobs:
       - name: Copy GitHub files into the SVN trunk
         run: |
           # Now we copy the files from the GitHub repository (current directory) into the SVN 'trunk' directory
-          cp -r ./trunk/
+          cp -r * ./trunk/
 
       - name: Commit and Push Changes to SVN
         run: |
