@@ -3,7 +3,7 @@ name: Deploy All Files from GitHub 'trunk' to WordPress Plugin SVN
 on:
   push:
     branches:
-      - sagar  # Change this to the branch you want to deploy from (e.g., 'main')
+      - main  # Change this to the branch you want to deploy from (e.g., 'main')
 
 jobs:
   deploy:
@@ -24,8 +24,8 @@ jobs:
 
     - name: Copy files from GitHub 'trunk' to SVN 'trunk'
       run: |
-        # Copy all files from the 'trunk' folder in GitHub to the 'trunk' folder in SVN
-        cp -r ./trunk/* ./trunk/
+        # Copy all files from the GitHub 'trunk' folder to SVN 'trunk' folder
+        rsync -av --exclude .git ./trunk/ ./trunk/
 
     - name: Commit and push changes to SVN
       run: |
