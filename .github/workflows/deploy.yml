@@ -3,7 +3,7 @@ name: Deploy All Files from GitHub 'trunk' to WordPress Plugin SVN
 on:
   push:
     branches:
-      - main  # Change this to the branch you want to deploy from (e.g., 'main')
+      - sagar  # Change this to the branch you want to deploy from (e.g., 'main')
 
 jobs:
   deploy:
