@@ -3,7 +3,7 @@ name: Deploy to SVN
 on:
   push:
     branches:
-      - sagar  # You can change this to your working branch
+      - main  # You can change this to your working branch
 
 jobs:
   deploy:
@@ -17,13 +17,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y subversion
 
-      - name: Checkout the SVN repository
+      - name: Checkout the SVN repository (trunk)
         run: |
-          svn checkout https://plugins.svn.wordpress.org/in-this-article/ --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
+          # Checkout the SVN trunk directory into the local working directory
+          svn checkout https://plugins.svn.wordpress.org/in-this-article/trunk/ --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
 
-      - name: Copy Git files to SVN folder
+      - name: Copy GitHub files into the SVN trunk
         run: |
-          cp -r * ./trunk/
+          # Now we copy the files from the GitHub repository (current directory) into the SVN 'trunk' directory
+          cp -r ./ ./trunk/
 
       - name: Commit and Push Changes to SVN
         run: |
