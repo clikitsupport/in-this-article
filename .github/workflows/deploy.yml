@@ -3,7 +3,7 @@ name: Deploy All Files from GitHub 'trunk' to WordPress Plugin SVN
 on:
   push:
     branches:
-      - sagar  # Change this to the branch you want to deploy from (e.g., 'main')
+      - sagar  # Trigger this action on push to the main branch (or your target branch)
 
 jobs:
   deploy:
@@ -16,19 +16,18 @@ jobs:
     - name: Set up SVN (subversion package)
       run: |
         sudo apt-get update
-        sudo apt-get install -y subversion  # Install subversion instead of svn
+        sudo apt-get install -y subversion  # Install subversion package
 
-    - name: Checkout WordPress Plugin SVN
+    - name: Checkout WordPress Plugin SVN 'trunk'
       run: |
-        svn co https://plugins.svn.wordpress.org/in-this-article/trunk/ trunk
+        svn co https://plugins.svn.wordpress.org/in-this-article/trunk/ trunk  # Checkout the SVN repo
 
     - name: Copy files from GitHub 'trunk' to SVN 'trunk'
       run: |
-        # Copy all files from the GitHub 'trunk' folder to SVN 'trunk' folder
-        rsync -av --exclude .git ./trunk/ ./trunk/
+        cp -r ./trunk/* ./trunk/  # Copy all files from GitHub trunk to SVN trunk
 
     - name: Commit and push changes to SVN
       run: |
         cd trunk
-        svn add * --force  # Add all files (including new files and directories)
+        svn add * --force  # Add new and modified files to SVN
         svn commit -m "Deploying all files from GitHub 'trunk' to WordPress plugin" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
