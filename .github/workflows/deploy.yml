@@ -20,7 +20,7 @@ jobs:
 
     - name: Checkout WordPress Plugin SVN 'trunk'
       run: |
-        svn co https://plugins.svn.wordpress.org/in-this-article/trunk/ trunk  # Checkout the SVN repo
+        svn co https://plugins.svn.wordpress.org/in-this-article/ trunk  # Checkout the SVN repo
 
     - name: Copy files from GitHub 'trunk' to SVN 'trunk'
       run: |
