@@ -3,7 +3,7 @@ name: Deploy to SVN
 on:
   push:
     branches:
-      - main  # You can change this to your working branch
+      - sagar  # You can change this to your working branch
 
 jobs:
   deploy:
