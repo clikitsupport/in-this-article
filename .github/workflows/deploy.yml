@@ -20,12 +20,12 @@ jobs:
       - name: Checkout the SVN repository (trunk)
         run: |
           # Checkout the SVN trunk directory into the local working directory
-          svn checkout https://plugins.svn.wordpress.org/in-this-article/ --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
+          svn co https://plugins.svn.wordpress.org/in-this-article/ trunk --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
 
       - name: Copy files from GitHub trunk to SVN trunk
         run: |
           # Copy the contents of the GitHub trunk folder into the SVN trunk directory
-          cp -r ./trunk/* ./trunk/
+          cp in-this-article.php ./trunk/
 
       - name: Check SVN status (ensure only modified/new files are added)
         run: |
