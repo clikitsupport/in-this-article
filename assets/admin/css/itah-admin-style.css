@@ -1,0 +1,33 @@
+.itah_guide {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 20px;
+    position: relative;
+    border-radius: 4px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 2px 0 #e6e6e6;
+    box-shadow: 0 2px 0 #e6e6e6;
+}
+
+
+.itah_heading {
+    border-bottom: 1px solid #e6e6e6;
+    padding: 15px 30px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.itah_heading h2 {
+    margin: 0;
+}
+.itah_description {
+    padding: 25px 25px;
+}
+.itah_description p {
+    margin: 0;
+    font-size: 15px;
+}
