@@ -21,10 +21,9 @@ jobs:
 
       - name: Copy files to SVN trunk and tag
         run: |
-          VERSION=$(git describe --tags --abbrev=0 | sed 's/v//') # Extracts version number from tag
-          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" --exclude=".svn" ./ svn/trunk/
-          rsync -av --delete ./ svn/tags/$VERSION/
-
+          VERSION=$(git describe --tags --abbrev=0) 
+          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" --exclude=".svn" ./ wordpress-svn/trunk/
+          rsync -av --delete ./ wordpress-svn/tags/$VERSION/
       - name: Commit changes to SVN
         run: |
           cd svn
