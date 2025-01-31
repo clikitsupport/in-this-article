@@ -1,35 +1,48 @@
-name: Deploy to WordPress SVN
+name: Update WP Plugin SVN and Create Tag
 
 on:
-  push:
-    tags:
-      - "*" # Triggers on version tag push (e.g., v1.0.0)
+  release:
+    types: [created]  # Trigger the workflow when a new release (tag) is created
 
 jobs:
-  deploy:
+  update-svn:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # Checkout the GitHub repository (this includes your plugin's files)
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v2
 
-      - name: Install SVN
-        run: sudo apt-get install -y subversion
-
-      - name: Checkout WordPress SVN repo
-        run: svn checkout --non-interactive --trust-server-cert https://plugins.svn.wordpress.org/in-this-article/ svn
-
-      - name: Copy files to SVN trunk and tag
+      # Set up SVN on the runner
+      - name: Set up SVN
         run: |
-          VERSION=$(git describe --tags --abbrev=0 | sed 's/v//') # Extracts version number from tag
-          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" --exclude=".svn" ./ svn/trunk/
-          rsync -av --delete ./ svn/tags/$VERSION/
+          sudo apt-get install -y subversion
 
-      - name: Commit changes to SVN
+      # Configure SVN credentials
+      - name: Configure SVN credentials
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         run: |
-          cd svn
-          svn add --force trunk/* --auto-props --parents --depth infinity
-          svn commit -m "Deploying new version of In This Article plugin" \
-            --username ${{ secrets.SVN_USERNAME }} \
-            --password ${{ secrets.SVN_PASSWORD }} \
-            --no-auth-cache --non-interactive
+          svn --username $SVN_USERNAME --password $SVN_PASSWORD --non-interactive info
+
+      # Checkout the SVN repository
+      - name: Checkout SVN repository
+        run: |
+          svn checkout https://plugins.svn.wordpress.org/in-this-article/trunk plugin-repo
+
+      # Update the plugin files in SVN (if needed)
+      - name: Update plugin in SVN
+        run: |
+          # Add your plugin update steps here (like copying files)
+          svn add . --force
+          svn commit -m "Update plugin files for release ${{ github.ref_name }}"
+
+      # Create the SVN tag based on the GitHub release tag
+      - name: Create SVN tag
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        run: |
+          TAG_NAME=${{ github.ref_name }}  # Use the release tag as the SVN tag name
+          svn copy https://plugins.svn.wordpress.org/in-this-article/trunk https://plugins.svn.wordpress.org/in-this-article/tags/$TAG_NAME -m "Tagging version $TAG_NAME"
