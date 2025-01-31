@@ -18,12 +18,12 @@ jobs:
 
       - name: Checkout WordPress SVN repo
         run: svn checkout --non-interactive --trust-server-cert https://plugins.svn.wordpress.org/in-this-article/ svn
+
       - name: Copy files to SVN trunk and tag
         run: |
           VERSION=$(git describe --tags --abbrev=0 | sed 's/v//') # Extracts version number from tag
           rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" --exclude=".svn" ./ svn/trunk/
           rsync -av --delete ./ svn/tags/$VERSION/
-
 
       - name: Commit changes to SVN
         run: |
