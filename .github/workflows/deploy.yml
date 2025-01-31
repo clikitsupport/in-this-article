@@ -3,7 +3,7 @@ name: Deploy to WordPress SVN
 on:
   push:
     tags:
-      - "v*" # Triggers on version tag push (e.g., v1.0.0)
+      - "*" # Triggers on version tag push (e.g., v1.0.0)
 
 jobs:
   deploy:
