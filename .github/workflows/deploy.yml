@@ -1,41 +1,35 @@
-name: Deploy Plugin from GitHub to SVN 'trunk' Directory
+name: Deploy to WordPress SVN
 
 on:
   push:
-    branches:
-      - sagar  # Trigger this action on push to the main branch (or your target branch)
+    tags:
+      - "v*" # Triggers on version tag push (e.g., v1.0.0)
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code from GitHub repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up SVN (subversion package)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y subversion  # Install subversion package
+      - name: Install SVN
+        run: sudo apt-get install -y subversion
 
-    - name: Checkout WordPress Plugin SVN 'trunk' Directory
-      run: |
-        svn co https://plugins.svn.wordpress.org/in-this-article/ trunk  # Checkout the SVN repo
+      - name: Checkout WordPress SVN repo
+        run: svn checkout --non-interactive --trust-server-cert https://plugins.svn.wordpress.org/in-this-article/ svn
 
-    - name: Update SVN Working Copy
-      run: |
-        svn update trunk  # Ensure the SVN working copy is up to date
+      - name: Copy files to SVN trunk and tag
+        run: |
+          VERSION=$(git describe --tags --abbrev=0 | sed 's/v//') # Extracts version number from tag
+          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" --exclude=".svn" ./ svn/trunk/
+          rsync -av --delete ./ svn/tags/$VERSION/
 
-    - name: Copy root plugin folder from GitHub to SVN 'trunk'
-      run: |
-        rsync -av --exclude .git ./ ./trunk/  # Copy all root plugin files from GitHub to SVN trunk folder (excluding .git)
-
-    - name: Add New/Modified Files to SVN
-      run: |
-        cd trunk
-        svn add * --force  # Add any new or modified files to SVN
-
-    - name: Commit and push changes to SVN
-      run: |
-        cd trunk
-        svn commit -m "Deploying plugin from GitHub to SVN 'trunk' directory" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }}
+      - name: Commit changes to SVN
+        run: |
+          cd svn
+          svn add --force trunk/* --auto-props --parents --depth infinity
+          svn commit -m "Deploying new version of In This Article plugin" \
+            --username ${{ secrets.SVN_USERNAME }} \
+            --password ${{ secrets.SVN_PASSWORD }} \
+            --no-auth-cache --non-interactive
