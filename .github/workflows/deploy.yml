@@ -20,25 +20,26 @@ jobs:
       - name: Define Version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Checkout WordPress SVN Repository
+      - name: Checkout WordPress SVN Repository (Fresh)
         run: |
-          svn checkout https://plugins.svn.wordpress.org/in-this-article --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --quiet
+          rm -rf /tmp/wordpress-svn
+          svn checkout https://plugins.svn.wordpress.org/in-this-article /tmp/wordpress-svn --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --quiet
 
-      - name: Copy Plugin Files to Trunk
+      - name: Sync Plugin Files to Trunk
         run: |
-          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" ./ in-this-article/trunk/
-          cd in-this-article
+          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" ./ /tmp/wordpress-svn/trunk/
+          cd /tmp/wordpress-svn
           svn status | grep '^!' | awk '{print $2}' | xargs svn delete || true
           svn add --force trunk/
 
       - name: Commit Changes to Trunk
         run: |
-          cd in-this-article
+          cd /tmp/wordpress-svn
           svn commit -m "Updating trunk to version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
 
-      - name: Create New Tag
+      - name: Create New Tag (After Trunk is Committed)
         run: |
-          cd in-this-article
+          cd /tmp/wordpress-svn
           svn copy trunk tags/$VERSION
           svn commit -m "Tagging version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
 
