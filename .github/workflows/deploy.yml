@@ -20,29 +20,26 @@ jobs:
       - name: Define Version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Checkout WordPress SVN Repo
+      - name: Checkout WordPress SVN Repository
         run: |
-          svn co --depth immediates https://plugins.svn.wordpress.org/in-this-article svn-repo
-          cd svn-repo
-          svn update --set-depth infinity trunk
-          svn update --set-depth infinity tags
+          svn checkout https://plugins.svn.wordpress.org/in-this-article --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --quiet
 
-      - name: Copy Plugin Files to Trunk (Corrected Path)
+      - name: Copy Plugin Files to Trunk
         run: |
-          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" ./ svn-repo/trunk/
-          cd svn-repo/trunk
+          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" ./ in-this-article/trunk/
+          cd in-this-article
           svn status | grep '^!' | awk '{print $2}' | xargs svn delete || true
-          svn add --force .
+          svn add --force trunk/
 
       - name: Commit Changes to Trunk
         run: |
-          cd svn-repo
-          svn commit -m "Update trunk to version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
+          cd in-this-article
+          svn commit -m "Updating trunk to version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
 
-      - name: Create New Tag (Corrected Path)
+      - name: Create New Tag
         run: |
-          cd svn-repo
-          svn cp trunk tags/$VERSION
+          cd in-this-article
+          svn copy trunk tags/$VERSION
           svn commit -m "Tagging version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
 
     env:
