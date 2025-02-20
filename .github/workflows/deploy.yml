@@ -1,40 +1,45 @@
-name: Sync to WordPress SVN on Release
+name: Deploy to WordPress SVN
 
 on:
-  release:
-    types:
-      - created  # Trigger this workflow when a new release is created
+  push:
+    tags:
+      - '*'  # Runs on any tag creation
 
 jobs:
-  sync:
+  deploy:
+    name: Deploy Plugin to WordPress SVN
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout GitHub repository
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up SVN
+      - name: Install SVN
+        run: sudo apt-get install -y subversion
+
+      - name: Define Version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Checkout WordPress SVN Repo
         run: |
-          sudo apt-get install subversion
+          svn co https://plugins.svn.wordpress.org/in-this-article svn-repo
 
-      - name: Sync to SVN
-        env:
-          SVN_USER: ${{ secrets.SVN_USER }}
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SVN_URL: https://plugins.svn.wordpress.org/in-this-article  # Your plugin's SVN URL
+      - name: Copy Plugin Files to Trunk
         run: |
-          # Checkout the SVN repository's trunk and tags folders directly
-          svn checkout $SVN_URL/trunk trunk
+          rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" ./ svn-repo/trunk/
 
-          # Copy GitHub repo files into the trunk folder
-          cp -r * trunk/
+      - name: Commit Changes to Trunk
+        run: |
+          cd svn-repo
+          svn add --force trunk/
+          svn commit -m "Update trunk to version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
 
-          # Add new files to SVN (if they are new or modified)
-          svn add --force trunk/*
+      - name: Create New Tag
+        run: |
+          cd svn-repo
+          svn cp trunk tags/$VERSION
+          svn commit -m "Tagging version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
 
-          # Commit changes to SVN's trunk
-          svn commit -m "Sync from GitHub: Update plugin to version ${{ github.event.release.tag_name }}" --username $SVN_USER --password $SVN_PASSWORD
-
-          # Tag the release in SVN
-          VERSION="${{ github.event.release.tag_name }}"
-          svn copy trunk "tags/$VERSION" -m "Tagging release $VERSION" --username $SVN_USER --password $SVN_PASSWORD
+    env:
+      SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+      SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
