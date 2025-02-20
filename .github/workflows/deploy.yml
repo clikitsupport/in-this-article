@@ -22,19 +22,24 @@ jobs:
 
       - name: Checkout WordPress SVN Repo
         run: |
-          svn co https://plugins.svn.wordpress.org/in-this-article svn-repo
+          svn co --depth immediates https://plugins.svn.wordpress.org/in-this-article svn-repo
+          cd svn-repo
+          svn update --set-depth infinity trunk
+          svn update --set-depth infinity tags
 
-      - name: Copy Plugin Files to Trunk
+      - name: Copy Plugin Files to Trunk (Corrected Path)
         run: |
           rsync -av --delete --exclude=".git" --exclude=".github" --exclude=".gitignore" ./ svn-repo/trunk/
+          cd svn-repo/trunk
+          svn status | grep '^!' | awk '{print $2}' | xargs svn delete || true
+          svn add --force .
 
       - name: Commit Changes to Trunk
         run: |
           cd svn-repo
-          svn add --force trunk/
           svn commit -m "Update trunk to version $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
 
-      - name: Create New Tag
+      - name: Create New Tag (Corrected Path)
         run: |
           cd svn-repo
           svn cp trunk tags/$VERSION
