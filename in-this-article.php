@@ -18,8 +18,8 @@ if ( ! function_exists( 'itah_scripts' ) ) {
 	 * Plugin scripts and styles.
 	 */
 	function itah_scripts() {
-		wp_register_style( 'itah-styles', plugin_dir_url( __FILE__ ) . '/assets/css/itah-style.css', '', 1.0 );
-		wp_register_script( 'itah-script', plugin_dir_url( __FILE__ ) . '/assets/js/itah-script.js', '', 1.0, true );
+		wp_register_style( 'itah-styles', plugin_dir_url( __FILE__ ) . 'assets/css/itah-style.css', '', 1.0 );
+		wp_register_script( 'itah-script', plugin_dir_url( __FILE__ ) . 'assets/js/itah-script.js', '', 1.0, true );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'itah_scripts' );
@@ -29,8 +29,8 @@ if ( ! function_exists( 'itah_admin_scripts' ) ) {
 	 * Plugin admin scripts and styles.
 	 */
 	function itah_admin_scripts() {
-		wp_enqueue_script( 'itah-admin-script', plugin_dir_url( __FILE__ ) . '/assets/admin/js/itah-admin-script.js', '', time(), true );
-		wp_enqueue_style( 'itah-admin-style', plugin_dir_url( __FILE__ ) . '/assets/admin/css/itah-admin-style.css', '', time() );
+		wp_enqueue_script( 'itah-admin-script', plugin_dir_url( __FILE__ ) . 'assets/admin/js/itah-admin-script.js', '', time(), true );
+		wp_enqueue_style( 'itah-admin-style', plugin_dir_url( __FILE__ ) . 'assets/admin/css/itah-admin-style.css', '', time() );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'itah_admin_scripts' );
