@@ -3,7 +3,7 @@ Contributors: bww, sagar7337
 Tags: headings, h2, h3, shortcode, post content  
 Requires at least: 6.6
 Tested up to: 6.6
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -37,10 +37,19 @@ Yes, it works with any content type that uses `h2` and `h3` headings in the post
 
 == Changelog ==
 
+= 1.2 =
+* Fixed double slash error in asset URLs for better compatibility with SEO crawlers like Ahrefs.
+
+= 1.1 =
+* Version update.
+
 = 1.0.0 =
 * Initial release of the plugin, providing shortcode support for fetching and displaying `h2` and `h3` tags from post content.
 
 == Upgrade Notice ==
+
+= 1.2 =
+Fixed double slash error in asset URLs. Recommended update for better SEO compatibility.
 
 = 1.0.0 =
 Initial release.
